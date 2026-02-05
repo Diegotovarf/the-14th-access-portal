@@ -1,6 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
-import { Heart, Mail, ShieldCheck } from "lucide-react"
+import { Heart, Lock, Mail, ShieldCheck } from "lucide-react"
 import GlassCard from "./components/ui/GlassCard"
 
 const TARGET_DATE = new Date(2026, 1, 14, 0, 0, 0, 0)
@@ -102,7 +102,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (phase !== "loading") return
+    if (phase !== "loading" && phase !== "accepted") return
     const interval = setInterval(
       () => setCountdown(getCountdown()),
       prefersReducedMotion ? 200 : 33,
@@ -194,6 +194,8 @@ function App() {
     [typedLength],
   )
 
+  const isUnlockDateReached = countdown.diff === 0
+
   const locationText =
     phase === "accepted"
       ? "Ubicacion de la cita: Lumen Rooftop, CDMX"
@@ -205,6 +207,7 @@ function App() {
     } catch {
       // ignore storage failures
     }
+    setLetterOpen(false)
     setPhase("accepted")
   }
 
@@ -292,41 +295,19 @@ function App() {
                 </div>
 
                 <div className="mt-7 space-y-4">
-                  <button
-                    type="button"
-                    onClick={() => setLetterOpen((open) => !open)}
-                    className="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/25 bg-white/5 px-5 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-white/85 backdrop-blur transition hover:border-white/40 sm:text-sm sm:tracking-[0.25em]"
-                  >
-                    <span className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-portal-gold/40 bg-portal-gold/10 text-portal-gold">
-                        <Mail className="h-5 w-5" />
+                  <div className="rounded-2xl border border-white/20 bg-white/5 px-5 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-white/70 backdrop-blur sm:text-sm sm:tracking-[0.25em]">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <span className="flex items-center gap-3 text-white/85">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-portal-gold/40 bg-portal-gold/10 text-portal-gold">
+                          <Lock className="h-5 w-5" />
+                        </span>
+                        Carta encriptada
                       </span>
-                      Carta encriptada
-                    </span>
-                    <span className="text-[10px] text-portal-gold/75 sm:text-[11px]">
-                      {letterOpen ? "Cerrar" : "Abrir"}
-                    </span>
-                  </button>
-
-                  <AnimatePresence>
-                    {letterOpen && (
-                      <motion.div
-                        key="letter"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-5"
-                      >
-                        <p className="min-h-[120px] whitespace-pre-line text-sm leading-relaxed text-white/90">
-                          {typedText}
-                          {typedLength < LETTER_TEXT.length && (
-                            <span className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-portal-gold/80 align-middle" />
-                          )}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                      <span className="text-[10px] text-portal-gold/75 sm:text-[11px]">
+                        Bloqueada hasta aceptar
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-8 space-y-4">
@@ -400,6 +381,77 @@ function App() {
                     revealed={true}
                     locationText={locationText}
                   />
+                </div>
+
+                <div className="mt-7 text-left">
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.2em] text-portal-gold/80 sm:text-xs sm:tracking-[0.35em]">
+                    <span>Temporizador de la carta</span>
+                    <span className="text-white/60">
+                      {isUnlockDateReached ? "Disponible" : "Bloqueada"}
+                    </span>
+                  </div>
+                  <div className="mt-3 rounded-2xl border border-white/20 bg-white/5 px-5 py-4">
+                    <div className="font-display text-2xl text-white sm:text-3xl text-crisp">
+                      {pad(countdown.days)}:{pad(countdown.hours)}:
+                      {pad(countdown.minutes)}:{pad(countdown.seconds)}
+                    </div>
+                    <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
+                      Desbloqueo el 14 de febrero
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 text-left">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!isUnlockDateReached) return
+                      setLetterOpen((open) => !open)
+                    }}
+                    className={`flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border px-5 py-4 text-left text-[11px] uppercase tracking-[0.2em] backdrop-blur sm:text-sm sm:tracking-[0.25em] ${
+                      isUnlockDateReached
+                        ? "border-white/30 bg-white/10 text-white/90 transition hover:border-white/50"
+                        : "border-white/15 bg-white/5 text-white/50"
+                    }`}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-portal-gold/40 bg-portal-gold/10 text-portal-gold">
+                        {isUnlockDateReached ? (
+                          <Mail className="h-5 w-5" />
+                        ) : (
+                          <Lock className="h-5 w-5" />
+                        )}
+                      </span>
+                      Carta encriptada
+                    </span>
+                    <span className="text-[10px] text-portal-gold/75 sm:text-[11px]">
+                      {isUnlockDateReached
+                        ? letterOpen
+                          ? "Cerrar"
+                          : "Abrir"
+                        : "Bloqueada"}
+                    </span>
+                  </button>
+
+                  <AnimatePresence>
+                    {letterOpen && isUnlockDateReached && (
+                      <motion.div
+                        key="letter"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="mt-4 overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-5"
+                      >
+                        <p className="min-h-[120px] whitespace-pre-line text-sm leading-relaxed text-white/90">
+                          {typedText}
+                          {typedLength < LETTER_TEXT.length && (
+                            <span className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-portal-gold/80 align-middle" />
+                          )}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </GlassCard>
             </motion.div>
