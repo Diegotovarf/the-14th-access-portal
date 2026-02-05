@@ -26,6 +26,13 @@ const getCountdown = () => {
 
 const pad = (value, length = 2) => String(value).padStart(length, "0")
 
+const getRandomClock = () => ({
+  hours: Math.floor(Math.random() * 24),
+  minutes: Math.floor(Math.random() * 60),
+  seconds: Math.floor(Math.random() * 60),
+  milliseconds: Math.floor(Math.random() * 1000),
+})
+
 const getElapsed = () => {
   const diff = Math.max(0, Date.now() - RELATIONSHIP_START.getTime())
   const totalSeconds = Math.floor(diff / 1000)
@@ -123,6 +130,7 @@ const pageMotion = {
 function App() {
   const [phase, setPhase] = useState(() => getInitialPhase())
   const [countdown, setCountdown] = useState(() => getCountdown())
+  const [loadingClock, setLoadingClock] = useState(() => getRandomClock())
   const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -149,6 +157,15 @@ function App() {
     const interval = setInterval(
       () => setCountdown(getCountdown()),
       prefersReducedMotion ? 200 : 33,
+    )
+    return () => clearInterval(interval)
+  }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "loading") return
+    const interval = setInterval(
+      () => setLoadingClock(getRandomClock()),
+      prefersReducedMotion ? 200 : 90,
     )
     return () => clearInterval(interval)
   }, [phase, prefersReducedMotion])
@@ -313,11 +330,11 @@ function App() {
                   Detectando coordenadas de acceso...
                 </div>
                 <div className="font-display text-4xl text-white sm:text-5xl text-crisp">
-                  {pad(countdown.days)}:{pad(countdown.hours)}:{pad(countdown.minutes)}
-                  :{pad(countdown.seconds)}
+                  {pad(loadingClock.hours)}:{pad(loadingClock.minutes)}:
+                  {pad(loadingClock.seconds)}
                 </div>
                 <div className="text-xs uppercase tracking-[0.3em] text-portal-gold/85 sm:text-sm sm:tracking-[0.4em]">
-                  {pad(countdown.milliseconds, 3)} ms
+                  {pad(loadingClock.milliseconds, 3)} ms
                 </div>
                 <p className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
                   Cuenta regresiva cifrada hacia el 14
