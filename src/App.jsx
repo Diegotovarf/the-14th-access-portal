@@ -147,7 +147,6 @@ function App() {
   const [dateFinalized, setDateFinalized] = useState(false)
   const [loadingLocked, setLoadingLocked] = useState(false)
   const [shake, setShake] = useState(false)
-  const [ellipsisCount, setEllipsisCount] = useState(0)
   const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -202,7 +201,6 @@ function App() {
         setLoadingClock(LOCKED_TIME)
         setLoadingDate(TARGET_DATE_TEXT)
         setDateResolved(true)
-        setEllipsisCount(3)
       },
       prefersReducedMotion ? 0 : 3200,
     )
@@ -242,15 +240,6 @@ function App() {
       clearTimeout(shakeTimer)
     }
   }, [dateResolved, prefersReducedMotion])
-
-  useEffect(() => {
-    if (phase !== "loading" || loadingLocked) return
-    const interval = setInterval(
-      () => setEllipsisCount((prev) => (prev + 1) % 4),
-      prefersReducedMotion ? 700 : 450,
-    )
-    return () => clearInterval(interval)
-  }, [phase, prefersReducedMotion, loadingLocked])
 
   useEffect(() => {
     if (phase !== "scan") return
@@ -404,7 +393,7 @@ function App() {
                 transition={{ duration: 0.5, ease: "easeInOut" }}
               >
                 <div className="text-[10px] uppercase tracking-[0.3em] text-portal-gold/90 sm:text-xs sm:tracking-[0.5em]">
-                  Detectando fecha de acceso...
+                  Detectando hora de acceso...
                 </div>
                 <div className="font-display text-4xl text-white sm:text-5xl text-crisp">
                   {pad(loadingClock.hours)}:{pad(loadingClock.minutes)}:
@@ -425,8 +414,7 @@ function App() {
                 )}
                 <div className="space-y-2">
                   <div className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
-                    Cuenta regresiva cifrada hacia{" "}
-                    {".".repeat(ellipsisCount)}
+                    Fecha cifrada hacia el ...
                   </div>
                   <div className="space-y-1 font-digital text-sm text-white/75 sm:text-base">
                     <div>{loadingDate}</div>
