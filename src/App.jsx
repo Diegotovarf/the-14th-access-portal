@@ -157,7 +157,7 @@ function App() {
     if (phase !== "loading") return
     const timer = setTimeout(
       () => setPhase("scan"),
-      prefersReducedMotion ? 0 : 2600,
+      prefersReducedMotion ? 0 : 4200,
     )
     return () => clearTimeout(timer)
   }, [phase, prefersReducedMotion])
@@ -165,8 +165,17 @@ function App() {
   useEffect(() => {
     if (phase !== "scan") return
     const timer = setTimeout(
+      () => setPhase("sync"),
+      prefersReducedMotion ? 0 : 3200,
+    )
+    return () => clearTimeout(timer)
+  }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "sync") return
+    const timer = setTimeout(
       () => setPhase("question"),
-      prefersReducedMotion ? 0 : 2200,
+      prefersReducedMotion ? 0 : 2400,
     )
     return () => clearTimeout(timer)
   }, [phase, prefersReducedMotion])
@@ -291,7 +300,7 @@ function App() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.9, ease: "easeOut" }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
             >
               {!prefersReducedMotion && (
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -325,7 +334,7 @@ function App() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.9, ease: "easeOut" }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
             >
               {!prefersReducedMotion && (
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -356,6 +365,54 @@ function App() {
             </motion.div>
           )}
 
+          {phase === "sync" && (
+            <motion.div
+              key="sync"
+              className="relative w-full max-w-2xl text-center"
+              variants={pageMotion}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 1.2, ease: "easeOut" }}
+            >
+              <div className="relative mx-auto flex h-52 w-52 items-center justify-center sm:h-64 sm:w-64">
+                <motion.div
+                  className="absolute h-full w-full rounded-full border border-portal-gold/30"
+                  animate={{ scale: [0.85, 1.05], opacity: [0.2, 0.8, 0.2] }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                  className="absolute h-[70%] w-[70%] rounded-full border border-portal-gold/40"
+                  animate={{ scale: [0.8, 1], opacity: [0.2, 0.9, 0.2] }}
+                  transition={{
+                    duration: 2.8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.4,
+                  }}
+                />
+                <motion.div
+                  className="absolute h-[40%] w-[40%] rounded-full bg-portal-gold/15"
+                  animate={{ scale: [0.9, 1.1], opacity: [0.4, 1, 0.4] }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.2,
+                  }}
+                />
+              </div>
+              <div className="mt-6 space-y-3">
+                <p className="text-[11px] uppercase tracking-[0.45em] text-portal-gold/90 sm:text-xs">
+                  Sincronizando senal emocional...
+                </p>
+                <p className="font-display text-3xl text-white sm:text-4xl text-crisp">
+                  Compatibilidad Confirmada
+                </p>
+              </div>
+            </motion.div>
+          )}
+
           {phase === "question" && (
             <motion.div
               key="question"
@@ -364,7 +421,7 @@ function App() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.9, ease: "easeOut" }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
             >
               <GlassCard>
                 <div className="flex flex-wrap items-center justify-between gap-3">

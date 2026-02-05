@@ -75,7 +75,7 @@ body {
     transparent 100%
   );
   filter: blur(0.5px);
-  animation: scanline 2.8s linear infinite;
+  animation: scanline 4.2s linear infinite;
   mix-blend-mode: screen;
   opacity: 0.9;
 }
@@ -111,7 +111,7 @@ body {
     transparent 100%
   );
   filter: blur(0.6px);
-  animation: biometric-scan 2.6s ease-in-out infinite;
+  animation: biometric-scan 4s ease-in-out infinite;
   mix-blend-mode: screen;
   opacity: 0.85;
 }
