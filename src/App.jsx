@@ -4,6 +4,7 @@ import { Heart, Lock, Mail, ShieldCheck } from "lucide-react"
 import GlassCard from "./components/ui/GlassCard"
 
 const TARGET_DATE = new Date(2026, 1, 14, 0, 0, 0, 0)
+const RELATIONSHIP_START = new Date(2023, 1, 14, 0, 0, 0, 0)
 const ACCEPTED_KEY = "portal14Accepted"
 const LETTER_TEXT =
   "Te invito a cruzar este portal. Una noche cuidada al detalle, una mesa reservada, y una promesa: desconectar el mundo para mirarnos de verdad.\n\nSi aceptas, la ubicacion se desbloquea. Si no, el sistema igual insiste en esperarte."
@@ -25,7 +26,31 @@ const getCountdown = () => {
 
 const pad = (value, length = 2) => String(value).padStart(length, "0")
 
-const LocationDecryptor = ({ revealed, locationText }) => {
+const getElapsed = () => {
+  const diff = Math.max(0, Date.now() - RELATIONSHIP_START.getTime())
+  const totalSeconds = Math.floor(diff / 1000)
+  const seconds = totalSeconds % 60
+  const totalMinutes = Math.floor(totalSeconds / 60)
+  const minutes = totalMinutes % 60
+  const totalHours = Math.floor(totalMinutes / 60)
+  const hours = totalHours % 24
+  const days = Math.floor(totalHours / 24)
+  return { days, hours, minutes, seconds }
+}
+
+const LocationDecryptor = ({
+  revealed,
+  locationText,
+  toneClass = "text-portal-gold/90",
+}) => {
+  const pixels = useMemo(
+    () =>
+      Array.from({ length: 72 }, (_, index) => ({
+        id: index,
+        delay: Math.random() * 0.35,
+      })),
+    [],
+  )
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase tracking-[0.2em] text-portal-gold/80 sm:text-[11px] sm:tracking-[0.35em]">
@@ -46,7 +71,24 @@ const LocationDecryptor = ({ revealed, locationText }) => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/60" />
         </motion.div>
-        <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-[10px] uppercase tracking-[0.2em] text-portal-gold/90 sm:text-xs sm:tracking-[0.4em]">
+        <div className="pointer-events-none absolute inset-0 grid grid-cols-12 grid-rows-6">
+          {pixels.map((pixel) => (
+            <motion.span
+              key={pixel.id}
+              className="bg-black/80"
+              initial={false}
+              animate={{ opacity: revealed ? 0 : 1 }}
+              transition={{
+                duration: revealed ? 0.5 : 0.2,
+                delay: revealed ? pixel.delay : 0,
+                ease: "easeOut",
+              }}
+            />
+          ))}
+        </div>
+        <div
+          className={`absolute inset-0 flex items-center justify-center px-6 text-center text-[10px] uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.4em] ${toneClass}`}
+        >
           <span className="max-w-[22rem] rounded-full bg-black/45 px-4 py-2 leading-snug backdrop-blur sm:max-w-none">
             {locationText}
           </span>
@@ -81,6 +123,7 @@ const pageMotion = {
 function App() {
   const [phase, setPhase] = useState(() => getInitialPhase())
   const [countdown, setCountdown] = useState(() => getCountdown())
+  const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
   const [letterOpen, setLetterOpen] = useState(false)
@@ -113,11 +156,26 @@ function App() {
   useEffect(() => {
     if (phase !== "loading") return
     const timer = setTimeout(
-      () => setPhase("question"),
+      () => setPhase("scan"),
       prefersReducedMotion ? 0 : 2600,
     )
     return () => clearTimeout(timer)
   }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "scan") return
+    const timer = setTimeout(
+      () => setPhase("question"),
+      prefersReducedMotion ? 0 : 2200,
+    )
+    return () => clearTimeout(timer)
+  }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "accepted") return
+    const interval = setInterval(() => setElapsed(getElapsed()), 1000)
+    return () => clearInterval(interval)
+  }, [phase])
 
   useEffect(() => {
     if (phase !== "question") return
@@ -198,8 +256,12 @@ function App() {
 
   const locationText =
     phase === "accepted"
-      ? "Ubicacion de la cita: Lumen Rooftop, CDMX"
-      : "Ubicacion de la cita: [REDACTED]"
+      ? "Lumen Rooftop, CDMX"
+      : "COORDENADAS: 19.4326 N 99.1332 W"
+  const locationTone =
+    phase === "accepted"
+      ? "text-portal-gold/90"
+      : "text-red-400 animate-pulse"
 
   const acceptInvite = () => {
     try {
@@ -255,6 +317,45 @@ function App() {
             </motion.div>
           )}
 
+          {phase === "scan" && (
+            <motion.div
+              key="scan"
+              className="relative w-full max-w-2xl text-center"
+              variants={pageMotion}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.9, ease: "easeOut" }}
+            >
+              {!prefersReducedMotion && (
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <div className="biometric-beam absolute inset-x-0 top-0" />
+                </div>
+              )}
+              <div className="relative z-10 space-y-4">
+                <motion.p
+                  className="text-[11px] uppercase tracking-[0.45em] text-portal-gold/90 sm:text-xs"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  Detectando ADN...
+                </motion.p>
+                <motion.p
+                  className="font-display text-3xl text-white sm:text-4xl text-crisp"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                >
+                  Valentine Detectada
+                </motion.p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white/70 sm:text-xs">
+                  Acceso exclusivo verificado
+                </p>
+              </div>
+            </motion.div>
+          )}
+
           {phase === "question" && (
             <motion.div
               key="question"
@@ -291,6 +392,7 @@ function App() {
                   <LocationDecryptor
                     revealed={false}
                     locationText={locationText}
+                    toneClass={locationTone}
                   />
                 </div>
 
@@ -380,6 +482,7 @@ function App() {
                   <LocationDecryptor
                     revealed={true}
                     locationText={locationText}
+                    toneClass={locationTone}
                   />
                 </div>
 
@@ -449,10 +552,49 @@ function App() {
                             <span className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-portal-gold/80 align-middle" />
                           )}
                         </p>
+                        <div className="mt-5 rounded-xl border border-white/10 bg-black/40 px-4 py-3">
+                          <div className="text-[10px] uppercase tracking-[0.3em] text-white/70">
+                            Tiempo invertido
+                          </div>
+                          <div className="mt-2 font-digital text-lg text-portal-gold sm:text-xl">
+                            {pad(elapsed.days)}d {pad(elapsed.hours)}h{" "}
+                            {pad(elapsed.minutes)}m {pad(elapsed.seconds)}s
+                          </div>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.7 }}
+                  className="mt-8"
+                >
+                  <div className="mx-auto inline-flex flex-wrap items-center justify-center gap-3 rounded-full border border-portal-gold/40 bg-portal-gold/10 px-6 py-3">
+                    <span className="font-script text-2xl text-portal-gold sm:text-3xl">
+                      Compromiso de San Valentin Firmado
+                    </span>
+                    <motion.svg
+                      width="120"
+                      height="40"
+                      viewBox="0 0 120 40"
+                      fill="none"
+                    >
+                      <motion.path
+                        d="M5 25 C 15 5, 35 5, 45 25 S 75 45, 85 20 110 20"
+                        stroke="rgba(212,175,55,0.9)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1.8, ease: "easeInOut" }}
+                      />
+                    </motion.svg>
+                  </div>
+                </motion.div>
               </GlassCard>
             </motion.div>
           )}

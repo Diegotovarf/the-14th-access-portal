@@ -1,5 +1,5 @@
 ﻿@import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600&family=Share+Tech+Mono&family=Great+Vibes&display=swap");
 
 :root {
   background-color: #050505;
@@ -27,6 +27,16 @@ body {
 
 .text-crisp {
   text-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+}
+
+.font-digital {
+  font-family: "Share Tech Mono", "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+.font-script {
+  font-family: "Great Vibes", "Times New Roman", serif;
+  letter-spacing: 0.02em;
 }
 
 .radar-map {
@@ -82,6 +92,43 @@ body {
     opacity: 1;
   }
   85% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+.biometric-beam {
+  height: 220px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(212, 175, 55, 0.12) 25%,
+    rgba(212, 175, 55, 0.55) 50%,
+    rgba(212, 175, 55, 0.15) 75%,
+    transparent 100%
+  );
+  filter: blur(0.6px);
+  animation: biometric-scan 2.6s ease-in-out infinite;
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+
+@keyframes biometric-scan {
+  0% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20%);
+    opacity: 1;
+  }
+  80% {
     opacity: 0.7;
   }
   100% {
