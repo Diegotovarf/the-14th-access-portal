@@ -27,7 +27,7 @@ const pad = (value, length = 2) => String(value).padStart(length, "0")
 const LocationDecryptor = ({ revealed, locationText }) => {
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-portal-gold/80">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase tracking-[0.2em] text-portal-gold/80 sm:text-[11px] sm:tracking-[0.35em]">
         <span>Location Decryptor</span>
         <span className="text-white/60">
           {revealed ? "Desencriptado" : "Enmascarado"}
@@ -45,11 +45,13 @@ const LocationDecryptor = ({ revealed, locationText }) => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/60" />
         </motion.div>
-        <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-xs uppercase tracking-[0.4em] text-portal-gold/85">
-          {locationText}
+        <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-[10px] uppercase tracking-[0.2em] text-portal-gold/90 sm:text-xs sm:tracking-[0.4em]">
+          <span className="max-w-[22rem] rounded-full bg-black/45 px-4 py-2 leading-snug backdrop-blur sm:max-w-none">
+            {locationText}
+          </span>
         </div>
       </div>
-      <div className="text-xs uppercase tracking-[0.3em] text-white/70">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
         {revealed
           ? "Coordenadas verificadas"
           : "Detectando coordenadas de acceso..."}
@@ -187,7 +189,7 @@ function App() {
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/5 to-transparent" />
       </div>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-16">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 sm:py-16">
         <AnimatePresence mode="sync">
           {phase === "loading" && (
             <motion.div
@@ -205,17 +207,17 @@ function App() {
               )}
 
               <div className="relative z-10 space-y-6">
-                <div className="text-xs uppercase tracking-[0.5em] text-portal-gold/85">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-portal-gold/90 sm:text-xs sm:tracking-[0.5em]">
                   Detectando coordenadas de acceso...
                 </div>
-                <div className="font-display text-4xl text-white sm:text-5xl">
+                <div className="font-display text-4xl text-white sm:text-5xl text-crisp">
                   {pad(countdown.days)}:{pad(countdown.hours)}:{pad(countdown.minutes)}
                   :{pad(countdown.seconds)}
                 </div>
-                <div className="text-sm uppercase tracking-[0.4em] text-portal-gold/80">
+                <div className="text-xs uppercase tracking-[0.3em] text-portal-gold/85 sm:text-sm sm:tracking-[0.4em]">
                   {pad(countdown.milliseconds, 3)} ms
                 </div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white/70">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
                   Cuenta regresiva cifrada hacia el 14
                 </p>
               </div>
@@ -232,23 +234,24 @@ function App() {
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <GlassCard>
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 text-portal-gold/80">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-portal-gold/85">
                     <ShieldCheck className="h-5 w-5" />
-                    <span className="text-xs uppercase tracking-[0.35em]">
+                    <span className="text-[10px] uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.35em]">
                       Canal encriptado
                     </span>
                   </div>
-                  <span className="text-xs uppercase tracking-[0.3em] text-white/70">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
                     Sesion segura
                   </span>
                 </div>
 
-                <h1 className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-4xl font-display">
+                <h1 className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-4xl font-display text-crisp">
                   Serias mi Valentine?
                 </h1>
-                <p className="mt-3 text-sm text-white/80 sm:text-base">
-                  Una invitacion cifrada, exclusiva y sin retorno. Solo un SI
+                <p className="mt-3 text-sm text-white/90 sm:text-base text-crisp">
+                  Una invitacion cifrada, exclusiva y sin retorno. Solo un{" "}
+                  <span className="text-portal-gold font-semibold">SI</span>{" "}
                   desbloquea el acceso.
                 </p>
 
@@ -263,7 +266,7 @@ function App() {
                   <button
                     type="button"
                     onClick={() => setLetterOpen((open) => !open)}
-                    className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/20 bg-white/5 px-5 py-4 text-left text-sm uppercase tracking-[0.25em] text-white/80 backdrop-blur transition hover:border-white/40"
+                    className="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/25 bg-white/5 px-5 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-white/85 backdrop-blur transition hover:border-white/40 sm:text-sm sm:tracking-[0.25em]"
                   >
                     <span className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full border border-portal-gold/40 bg-portal-gold/10 text-portal-gold">
@@ -271,7 +274,7 @@ function App() {
                       </span>
                       Carta encriptada
                     </span>
-                    <span className="text-[11px] text-portal-gold/70">
+                    <span className="text-[10px] text-portal-gold/75 sm:text-[11px]">
                       {letterOpen ? "Cerrar" : "Abrir"}
                     </span>
                   </button>
@@ -286,7 +289,7 @@ function App() {
                         transition={{ duration: 0.5, ease: "easeOut" }}
                         className="overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-5"
                       >
-                        <p className="min-h-[120px] whitespace-pre-line text-sm leading-relaxed text-white/80">
+                        <p className="min-h-[120px] whitespace-pre-line text-sm leading-relaxed text-white/90">
                           {typedText}
                           {typedLength < LETTER_TEXT.length && (
                             <span className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-portal-gold/80 align-middle" />
@@ -301,7 +304,7 @@ function App() {
                   <button
                     type="button"
                     onClick={() => setPhase("accepted")}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-portal-gold to-portal-gold-light px-6 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-black shadow-[0_0_45px_rgba(212,175,55,0.35)] ring-1 ring-portal-gold/50 transition hover:brightness-110"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-portal-gold to-portal-gold-light px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black shadow-[0_0_45px_rgba(212,175,55,0.35)] ring-1 ring-portal-gold/60 transition hover:brightness-110 sm:tracking-[0.25em]"
                   >
                     Aceptar invitacion
                     <Heart className="h-4 w-4" />
@@ -309,7 +312,7 @@ function App() {
 
                   {shouldEvade ? (
                     <div className="space-y-2">
-                      <div className="text-[11px] uppercase tracking-[0.35em] text-white/60">
+                      <div className="text-[10px] uppercase tracking-[0.2em] text-white/65 sm:text-[11px] sm:tracking-[0.35em]">
                         Rechazar acceso
                       </div>
                       <div
@@ -332,7 +335,7 @@ function App() {
                   ) : (
                     <button
                       type="button"
-                      className="w-full rounded-full border border-white/30 bg-white/10 px-5 py-3 text-xs uppercase tracking-[0.3em] text-white/85 backdrop-blur"
+                      className="w-full rounded-full border border-white/30 bg-white/10 px-5 py-3 text-[10px] uppercase tracking-[0.2em] text-white/85 backdrop-blur sm:text-xs sm:tracking-[0.3em]"
                     >
                       No
                     </button>
@@ -354,10 +357,10 @@ function App() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-portal-gold/30 bg-portal-gold/10">
                   <Heart className="h-7 w-7 text-portal-gold" />
                 </div>
-                <h2 className="mt-6 text-3xl font-display text-portal-gold sm:text-4xl">
+                <h2 className="mt-6 text-3xl font-display text-portal-gold sm:text-4xl text-crisp">
                   Identidad Confirmada. Acceso al Corazon Concedido.
                 </h2>
-                <p className="mt-3 text-sm text-white/75 sm:text-base">
+                <p className="mt-3 text-sm text-white/90 sm:text-base text-crisp">
                   Coordenadas liberadas. Tu lugar ya esta asegurado.
                 </p>
 
