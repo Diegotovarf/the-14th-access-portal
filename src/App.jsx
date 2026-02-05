@@ -11,6 +11,7 @@ const LETTER_TEXT =
 
 const TARGET_DATE_TEXT = "14/02/2026"
 const TARGET_DATE_DISPLAY = "14 de Febrero"
+const LOCKED_TIME = { hours: 19, minutes: 0, seconds: 0, milliseconds: 0 }
 
 const getCountdown = () => {
   const now = Date.now()
@@ -141,11 +142,11 @@ function App() {
   const [phase, setPhase] = useState(() => getInitialPhase())
   const [countdown, setCountdown] = useState(() => getCountdown())
   const [loadingClock, setLoadingClock] = useState(() => getRandomClock())
-  const [loadingDates, setLoadingDates] = useState(() =>
-    Array.from({ length: 3 }, () => getRandomDate()),
-  )
+  const [loadingDate, setLoadingDate] = useState(() => getRandomDate())
   const [dateResolved, setDateResolved] = useState(false)
   const [dateFinalized, setDateFinalized] = useState(false)
+  const [loadingLocked, setLoadingLocked] = useState(false)
+  const [shake, setShake] = useState(false)
   const [ellipsisCount, setEllipsisCount] = useState(0)
   const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
@@ -178,61 +179,78 @@ function App() {
   }, [phase, prefersReducedMotion])
 
   useEffect(() => {
-    if (phase !== "loading") return
+    if (phase !== "loading" || loadingLocked) return
     const interval = setInterval(
       () => setLoadingClock(getRandomClock()),
-      prefersReducedMotion ? 300 : 180,
+      prefersReducedMotion ? 300 : 220,
     )
     return () => clearInterval(interval)
-  }, [phase, prefersReducedMotion])
+  }, [phase, prefersReducedMotion, loadingLocked])
 
   useEffect(() => {
     if (phase !== "loading") return
     setDateResolved(false)
     setDateFinalized(false)
-    const interval = setInterval(
-      () =>
-        setLoadingDates((prev) => [getRandomDate(), ...prev].slice(0, 3)),
-      prefersReducedMotion ? 400 : 220,
+    setLoadingLocked(false)
+    setShake(false)
+    setLoadingClock(getRandomClock())
+    setLoadingDate(getRandomDate())
+
+    const lockTimer = setTimeout(
+      () => {
+        setLoadingLocked(true)
+        setLoadingClock(LOCKED_TIME)
+        setLoadingDate(TARGET_DATE_TEXT)
+        setDateResolved(true)
+        setEllipsisCount(3)
+      },
+      prefersReducedMotion ? 0 : 3200,
     )
-    return () => clearInterval(interval)
+    const scanTimer = setTimeout(
+      () => setPhase("scan"),
+      prefersReducedMotion ? 0 : 6200,
+    )
+
+    return () => {
+      clearTimeout(lockTimer)
+      clearTimeout(scanTimer)
+    }
   }, [phase, prefersReducedMotion])
 
   useEffect(() => {
-    if (phase !== "loading") return
-    const timer = setTimeout(
-      () => setDateResolved(true),
-      prefersReducedMotion ? 0 : 3600,
+    if (phase !== "loading" || loadingLocked) return
+    const interval = setInterval(
+      () => setLoadingDate(getRandomDate()),
+      prefersReducedMotion ? 450 : 260,
     )
-    return () => clearTimeout(timer)
-  }, [phase, prefersReducedMotion])
+    return () => clearInterval(interval)
+  }, [phase, prefersReducedMotion, loadingLocked])
 
   useEffect(() => {
     if (!dateResolved) return
-    const timer = setTimeout(
-      () => setDateFinalized(true),
+    setShake(true)
+    const shakeTimer = setTimeout(
+      () => setShake(false),
       prefersReducedMotion ? 0 : 600,
     )
-    return () => clearTimeout(timer)
+    const timer = setTimeout(
+      () => setDateFinalized(true),
+      prefersReducedMotion ? 0 : 500,
+    )
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(shakeTimer)
+    }
   }, [dateResolved, prefersReducedMotion])
 
   useEffect(() => {
-    if (phase !== "loading") return
+    if (phase !== "loading" || loadingLocked) return
     const interval = setInterval(
       () => setEllipsisCount((prev) => (prev + 1) % 4),
       prefersReducedMotion ? 700 : 450,
     )
     return () => clearInterval(interval)
-  }, [phase, prefersReducedMotion])
-
-  useEffect(() => {
-    if (phase !== "loading") return
-    const timer = setTimeout(
-      () => setPhase("scan"),
-      prefersReducedMotion ? 0 : 4200,
-    )
-    return () => clearTimeout(timer)
-  }, [phase, prefersReducedMotion])
+  }, [phase, prefersReducedMotion, loadingLocked])
 
   useEffect(() => {
     if (phase !== "scan") return
@@ -380,7 +398,11 @@ function App() {
                 </div>
               )}
 
-              <div className="relative z-10 space-y-6">
+              <motion.div
+                className="relative z-10 space-y-6"
+                animate={shake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
                 <div className="text-[10px] uppercase tracking-[0.3em] text-portal-gold/90 sm:text-xs sm:tracking-[0.5em]">
                   Detectando fecha de acceso...
                 </div>
@@ -407,18 +429,10 @@ function App() {
                     {".".repeat(ellipsisCount)}
                   </div>
                   <div className="space-y-1 font-digital text-sm text-white/75 sm:text-base">
-                    {loadingDates.map((date, index) => (
-                      <div key={`${date}-${index}`}>
-                        {dateResolved && index === 0
-                          ? dateFinalized
-                            ? "14 de Feb"
-                            : TARGET_DATE_TEXT
-                          : date}
-                      </div>
-                    ))}
+                    <div>{loadingDate}</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           )}
 
