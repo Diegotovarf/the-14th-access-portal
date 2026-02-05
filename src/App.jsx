@@ -166,7 +166,7 @@ function App() {
     if (phase !== "scan") return
     const timer = setTimeout(
       () => setPhase("sync"),
-      prefersReducedMotion ? 0 : 3200,
+      prefersReducedMotion ? 0 : 5200,
     )
     return () => clearTimeout(timer)
   }, [phase, prefersReducedMotion])
@@ -175,7 +175,7 @@ function App() {
     if (phase !== "sync") return
     const timer = setTimeout(
       () => setPhase("question"),
-      prefersReducedMotion ? 0 : 2400,
+      prefersReducedMotion ? 0 : 5200,
     )
     return () => clearTimeout(timer)
   }, [phase, prefersReducedMotion])
@@ -334,7 +334,7 @@ function App() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 1.2, ease: "easeOut" }}
+              transition={{ duration: 1.6, ease: "easeOut" }}
             >
               {!prefersReducedMotion && (
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -373,19 +373,19 @@ function App() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 1.2, ease: "easeOut" }}
+              transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="relative mx-auto flex h-52 w-52 items-center justify-center sm:h-64 sm:w-64">
                 <motion.div
                   className="absolute h-full w-full rounded-full border border-portal-gold/30"
                   animate={{ scale: [0.85, 1.05], opacity: [0.2, 0.8, 0.2] }}
-                  transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 4.6, repeat: Infinity, ease: "easeInOut" }}
                 />
                 <motion.div
                   className="absolute h-[70%] w-[70%] rounded-full border border-portal-gold/40"
                   animate={{ scale: [0.8, 1], opacity: [0.2, 0.9, 0.2] }}
                   transition={{
-                    duration: 2.8,
+                    duration: 4.2,
                     repeat: Infinity,
                     ease: "easeInOut",
                     delay: 0.4,
@@ -395,7 +395,7 @@ function App() {
                   className="absolute h-[40%] w-[40%] rounded-full bg-portal-gold/15"
                   animate={{ scale: [0.9, 1.1], opacity: [0.4, 1, 0.4] }}
                   transition={{
-                    duration: 2.2,
+                    duration: 3.6,
                     repeat: Infinity,
                     ease: "easeInOut",
                     delay: 0.2,
