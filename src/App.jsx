@@ -4,6 +4,7 @@ import { Heart, Mail, ShieldCheck } from "lucide-react"
 import GlassCard from "./components/ui/GlassCard"
 
 const TARGET_DATE = new Date(2026, 1, 14, 0, 0, 0, 0)
+const ACCEPTED_KEY = "portal14Accepted"
 const LETTER_TEXT =
   "Te invito a cruzar este portal. Una noche cuidada al detalle, una mesa reservada, y una promesa: desconectar el mundo para mirarnos de verdad.\n\nSi aceptas, la ubicacion se desbloquea. Si no, el sistema igual insiste en esperarte."
 
@@ -60,8 +61,25 @@ const LocationDecryptor = ({ revealed, locationText }) => {
   )
 }
 
+const getInitialPhase = () => {
+  if (typeof window === "undefined") return "loading"
+  try {
+    return window.localStorage.getItem(ACCEPTED_KEY) === "true"
+      ? "accepted"
+      : "loading"
+  } catch {
+    return "loading"
+  }
+}
+
+const pageMotion = {
+  initial: { opacity: 0, y: 18, filter: "blur(6px)" },
+  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+  exit: { opacity: 0, y: -14, filter: "blur(6px)" },
+}
+
 function App() {
-  const [phase, setPhase] = useState("loading")
+  const [phase, setPhase] = useState(() => getInitialPhase())
   const [countdown, setCountdown] = useState(() => getCountdown())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -181,6 +199,15 @@ function App() {
       ? "Ubicacion de la cita: Lumen Rooftop, CDMX"
       : "Ubicacion de la cita: [REDACTED]"
 
+  const acceptInvite = () => {
+    try {
+      window.localStorage.setItem(ACCEPTED_KEY, "true")
+    } catch {
+      // ignore storage failures
+    }
+    setPhase("accepted")
+  }
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-portal-black text-white">
       <div className="pointer-events-none absolute inset-0">
@@ -190,15 +217,16 @@ function App() {
       </div>
 
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 sm:py-16">
-        <AnimatePresence mode="sync">
+        <AnimatePresence mode="wait">
           {phase === "loading" && (
             <motion.div
               key="loading"
               className="relative w-full max-w-2xl text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.6 }}
+              variants={pageMotion}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.9, ease: "easeOut" }}
             >
               {!prefersReducedMotion && (
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -228,10 +256,11 @@ function App() {
             <motion.div
               key="question"
               className="w-full max-w-[680px]"
-              initial={{ opacity: 0, y: 30, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.96 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              variants={pageMotion}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.9, ease: "easeOut" }}
             >
               <GlassCard>
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -303,7 +332,7 @@ function App() {
                 <div className="mt-8 space-y-4">
                   <button
                     type="button"
-                    onClick={() => setPhase("accepted")}
+                    onClick={acceptInvite}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-portal-gold to-portal-gold-light px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black shadow-[0_0_45px_rgba(212,175,55,0.35)] ring-1 ring-portal-gold/60 transition hover:brightness-110 sm:tracking-[0.25em]"
                   >
                     Aceptar invitacion
@@ -349,9 +378,11 @@ function App() {
             <motion.div
               key="accepted"
               className="w-full max-w-[680px]"
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              variants={pageMotion}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 1.0, ease: "easeOut" }}
             >
               <GlassCard className="text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-portal-gold/30 bg-portal-gold/10">
