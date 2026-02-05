@@ -147,6 +147,9 @@ function App() {
   const [dateFinalized, setDateFinalized] = useState(false)
   const [loadingLocked, setLoadingLocked] = useState(false)
   const [shake, setShake] = useState(false)
+  const [scanName, setScanName] = useState("NICOLE REYES")
+  const [scanResolved, setScanResolved] = useState(false)
+  const [scanShake, setScanShake] = useState(false)
   const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -243,12 +246,51 @@ function App() {
 
   useEffect(() => {
     if (phase !== "scan") return
+    setScanResolved(false)
+    setScanShake(false)
+    setScanName("NICOLE REYES")
+    const target = "NICOLE REYES"
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let iterations = 0
+
+    const scramble = setInterval(() => {
+      iterations += 1
+      const revealCount = Math.min(iterations, target.length)
+      const next = target
+        .split("")
+        .map((char, index) => {
+          if (char === " ") return " "
+          if (index < revealCount) return target[index]
+          return alphabet[Math.floor(Math.random() * alphabet.length)]
+        })
+        .join("")
+      setScanName(next)
+
+      if (revealCount >= target.length) {
+        clearInterval(scramble)
+        setScanResolved(true)
+      }
+    }, prefersReducedMotion ? 30 : 70)
+
     const timer = setTimeout(
       () => setPhase("sync"),
       prefersReducedMotion ? 0 : 5200,
     )
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      clearInterval(scramble)
+    }
   }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (!scanResolved) return
+    setScanShake(true)
+    const timer = setTimeout(
+      () => setScanShake(false),
+      prefersReducedMotion ? 0 : 600,
+    )
+    return () => clearTimeout(timer)
+  }, [scanResolved, prefersReducedMotion])
 
   useEffect(() => {
     if (phase !== "sync") return
@@ -439,7 +481,11 @@ function App() {
                   <div className="biometric-beam absolute inset-x-0 top-0" />
                 </div>
               )}
-              <div className="relative z-10 space-y-4">
+              <motion.div
+                className="relative z-10 space-y-4"
+                animate={scanShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
                 <motion.p
                   className="text-[11px] uppercase tracking-[0.45em] text-portal-gold/90 sm:text-xs"
                   initial={{ opacity: 0 }}
@@ -454,12 +500,12 @@ function App() {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.8, delay: 0.9 }}
                 >
-                  Valentine Detectada
+                  {scanName}
                 </motion.p>
                 <p className="text-[10px] uppercase tracking-[0.3em] text-white/70 sm:text-xs">
                   Acceso exclusivo verificado
                 </p>
-              </div>
+              </motion.div>
             </motion.div>
           )}
 
