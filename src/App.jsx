@@ -9,6 +9,9 @@ const ACCEPTED_KEY = "portal14Accepted"
 const LETTER_TEXT =
   "Te invito a cruzar este portal. Una noche cuidada al detalle, una mesa reservada, y una promesa: desconectar el mundo para mirarnos de verdad.\n\nSi aceptas, la ubicacion se desbloquea. Si no, el sistema igual insiste en esperarte."
 
+const TARGET_DATE_TEXT = "14/02/2026"
+const TARGET_DATE_DISPLAY = "14 de Febrero"
+
 const getCountdown = () => {
   const now = Date.now()
   const diff = Math.max(0, TARGET_DATE.getTime() - now)
@@ -32,6 +35,13 @@ const getRandomClock = () => ({
   seconds: Math.floor(Math.random() * 60),
   milliseconds: Math.floor(Math.random() * 1000),
 })
+
+const getRandomDate = () => {
+  const day = Math.floor(Math.random() * 28) + 1
+  const month = Math.floor(Math.random() * 12) + 1
+  const year = Math.floor(Math.random() * 6) + 24
+  return `${pad(day)}/${pad(month)}/${pad(year)}`
+}
 
 const getElapsed = () => {
   const diff = Math.max(0, Date.now() - RELATIONSHIP_START.getTime())
@@ -131,6 +141,12 @@ function App() {
   const [phase, setPhase] = useState(() => getInitialPhase())
   const [countdown, setCountdown] = useState(() => getCountdown())
   const [loadingClock, setLoadingClock] = useState(() => getRandomClock())
+  const [loadingDates, setLoadingDates] = useState(() =>
+    Array.from({ length: 3 }, () => getRandomDate()),
+  )
+  const [dateResolved, setDateResolved] = useState(false)
+  const [dateFinalized, setDateFinalized] = useState(false)
+  const [ellipsisCount, setEllipsisCount] = useState(0)
   const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -165,7 +181,46 @@ function App() {
     if (phase !== "loading") return
     const interval = setInterval(
       () => setLoadingClock(getRandomClock()),
-      prefersReducedMotion ? 200 : 90,
+      prefersReducedMotion ? 300 : 180,
+    )
+    return () => clearInterval(interval)
+  }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "loading") return
+    setDateResolved(false)
+    setDateFinalized(false)
+    const interval = setInterval(
+      () =>
+        setLoadingDates((prev) => [getRandomDate(), ...prev].slice(0, 3)),
+      prefersReducedMotion ? 400 : 220,
+    )
+    return () => clearInterval(interval)
+  }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "loading") return
+    const timer = setTimeout(
+      () => setDateResolved(true),
+      prefersReducedMotion ? 0 : 3600,
+    )
+    return () => clearTimeout(timer)
+  }, [phase, prefersReducedMotion])
+
+  useEffect(() => {
+    if (!dateResolved) return
+    const timer = setTimeout(
+      () => setDateFinalized(true),
+      prefersReducedMotion ? 0 : 600,
+    )
+    return () => clearTimeout(timer)
+  }, [dateResolved, prefersReducedMotion])
+
+  useEffect(() => {
+    if (phase !== "loading") return
+    const interval = setInterval(
+      () => setEllipsisCount((prev) => (prev + 1) % 4),
+      prefersReducedMotion ? 700 : 450,
     )
     return () => clearInterval(interval)
   }, [phase, prefersReducedMotion])
@@ -327,7 +382,7 @@ function App() {
 
               <div className="relative z-10 space-y-6">
                 <div className="text-[10px] uppercase tracking-[0.3em] text-portal-gold/90 sm:text-xs sm:tracking-[0.5em]">
-                  Detectando coordenadas de acceso...
+                  Detectando fecha de acceso...
                 </div>
                 <div className="font-display text-4xl text-white sm:text-5xl text-crisp">
                   {pad(loadingClock.hours)}:{pad(loadingClock.minutes)}:
@@ -336,9 +391,33 @@ function App() {
                 <div className="text-xs uppercase tracking-[0.3em] text-portal-gold/85 sm:text-sm sm:tracking-[0.4em]">
                   {pad(loadingClock.milliseconds, 3)} ms
                 </div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
-                  Cuenta regresiva cifrada hacia el 14
-                </p>
+                {dateFinalized && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="font-display text-3xl text-portal-gold sm:text-4xl text-crisp"
+                  >
+                    {TARGET_DATE_DISPLAY}
+                  </motion.div>
+                )}
+                <div className="space-y-2">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.3em]">
+                    Cuenta regresiva cifrada hacia{" "}
+                    {".".repeat(ellipsisCount)}
+                  </div>
+                  <div className="space-y-1 font-digital text-sm text-white/75 sm:text-base">
+                    {loadingDates.map((date, index) => (
+                      <div key={`${date}-${index}`}>
+                        {dateResolved && index === 0
+                          ? dateFinalized
+                            ? "14 de Feb"
+                            : TARGET_DATE_TEXT
+                          : date}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
