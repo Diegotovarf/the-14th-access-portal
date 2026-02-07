@@ -56,6 +56,44 @@ const getElapsed = () => {
   return { days, hours, minutes, seconds }
 }
 
+const ConfettiBurst = () => {
+  const pieces = useMemo(
+    () =>
+      Array.from({ length: 28 }, (_, index) => ({
+        id: index,
+        x: (Math.random() - 0.5) * 240,
+        delay: Math.random() * 0.2,
+        size: 6 + Math.random() * 6,
+        rotate: Math.random() * 360,
+        hue: Math.random() > 0.5 ? "bg-portal-gold" : "bg-white/80",
+      })),
+    [],
+  )
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {pieces.map((piece) => (
+        <motion.span
+          key={piece.id}
+          className={`absolute left-1/2 top-2 rounded-full ${piece.hue}`}
+          style={{ width: piece.size, height: piece.size }}
+          initial={{ opacity: 0, y: -20, x: piece.x, rotate: 0 }}
+          animate={{
+            opacity: [0, 1, 1, 0],
+            y: [0, 120, 260],
+            rotate: [0, piece.rotate],
+          }}
+          transition={{
+            duration: 1.8,
+            delay: piece.delay,
+            ease: "easeOut",
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 const LocationDecryptor = ({
   revealed,
   locationText,
@@ -670,13 +708,14 @@ function App() {
           {phase === "accepted" && (
             <motion.div
               key="accepted"
-              className="w-full max-w-[680px]"
+              className="relative w-full max-w-[680px]"
               variants={pageMotion}
               initial="initial"
               animate="animate"
               exit="exit"
               transition={{ duration: 1.0, ease: "easeOut" }}
             >
+              <ConfettiBurst />
               <GlassCard className="text-center">
                 <div className="mt-2 text-left">
                   <LocationDecryptor
