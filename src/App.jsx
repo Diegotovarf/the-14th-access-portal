@@ -150,6 +150,7 @@ function App() {
   const [scanName, setScanName] = useState("NICOLE REYES")
   const [scanResolved, setScanResolved] = useState(false)
   const [scanShake, setScanShake] = useState(false)
+  const [noJiggle, setNoJiggle] = useState(false)
   const [elapsed, setElapsed] = useState(() => getElapsed())
   const [noPos, setNoPos] = useState({ x: 0, y: 0 })
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -291,6 +292,15 @@ function App() {
     )
     return () => clearTimeout(timer)
   }, [scanResolved, prefersReducedMotion])
+
+  useEffect(() => {
+    if (!noJiggle) return
+    const timer = setTimeout(
+      () => setNoJiggle(false),
+      prefersReducedMotion ? 0 : 520,
+    )
+    return () => clearTimeout(timer)
+  }, [noJiggle, prefersReducedMotion])
 
   useEffect(() => {
     if (phase !== "sync") return
@@ -580,14 +590,9 @@ function App() {
                   </span>
                 </div>
 
-                <h1 className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-4xl font-display text-crisp">
-                  Serias mi Valentine?
+                <h1 className="mt-6 text-center text-4xl font-semibold leading-tight text-white sm:text-5xl md:text-6xl font-display text-crisp">
+                  WOULD YOU BE MY VALENTINE ?
                 </h1>
-                <p className="mt-3 text-sm text-white/90 sm:text-base text-crisp">
-                  Una invitacion cifrada, exclusiva y sin retorno. Solo un{" "}
-                  <span className="text-portal-gold font-semibold">SI</span>{" "}
-                  desbloquea el acceso.
-                </p>
 
                 <div className="mt-7">
                   <LocationDecryptor
@@ -617,7 +622,7 @@ function App() {
                   <button
                     type="button"
                     onClick={acceptInvite}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-portal-gold to-portal-gold-light px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black shadow-[0_0_45px_rgba(212,175,55,0.35)] ring-1 ring-portal-gold/60 transition hover:brightness-110 sm:tracking-[0.25em]"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-portal-gold to-portal-gold-light px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_0_45px_rgba(212,175,55,0.35)] ring-1 ring-portal-gold/60 transition hover:brightness-110 sm:tracking-[0.25em] text-crisp"
                   >
                     Aceptar invitacion
                     <Heart className="h-4 w-4" />
@@ -646,12 +651,22 @@ function App() {
                       </div>
                     </div>
                   ) : (
-                    <button
+                    <motion.button
                       type="button"
+                      onClick={() => setNoJiggle(true)}
                       className="w-full rounded-full border border-white/30 bg-white/10 px-5 py-3 text-[10px] uppercase tracking-[0.2em] text-white/85 backdrop-blur sm:text-xs sm:tracking-[0.3em]"
+                      animate={
+                        noJiggle
+                          ? {
+                              x: [0, -8, 8, -6, 6, 0],
+                              rotate: [0, -2, 2, -1, 1, 0],
+                            }
+                          : { x: 0, rotate: 0 }
+                      }
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
                     >
                       No
-                    </button>
+                    </motion.button>
                   )}
                 </div>
               </GlassCard>
