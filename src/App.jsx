@@ -394,14 +394,8 @@ function App() {
 
   const isUnlockDateReached = countdown.diff === 0
 
-  const locationText =
-    phase === "accepted"
-      ? "Lumen Rooftop, CDMX"
-      : "COORDENADAS: 19.4326 N 99.1332 W"
-  const locationTone =
-    phase === "accepted"
-      ? "text-portal-gold/90"
-      : "text-red-400 animate-pulse"
+  const locationText = "COORDENADAS: 19.4326 N 99.1332 W"
+  const locationTone = "text-red-400 animate-pulse"
 
   const acceptInvite = () => {
     try {
@@ -684,17 +678,7 @@ function App() {
               transition={{ duration: 1.0, ease: "easeOut" }}
             >
               <GlassCard className="text-center">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-portal-gold/30 bg-portal-gold/10">
-                  <Heart className="h-7 w-7 text-portal-gold" />
-                </div>
-                <h2 className="mt-6 text-3xl font-display text-portal-gold sm:text-4xl text-crisp">
-                  Identidad Confirmada. Acceso al Corazon Concedido.
-                </h2>
-                <p className="mt-3 text-sm text-white/90 sm:text-base text-crisp">
-                  Coordenadas liberadas. Tu lugar ya esta asegurado.
-                </p>
-
-                <div className="mt-7 text-left">
+                <div className="mt-2 text-left">
                   <LocationDecryptor
                     revealed={true}
                     locationText={locationText}
@@ -782,35 +766,6 @@ function App() {
                   </AnimatePresence>
                 </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.7 }}
-                  className="mt-8"
-                >
-                  <div className="mx-auto inline-flex flex-wrap items-center justify-center gap-3 rounded-full border border-portal-gold/40 bg-portal-gold/10 px-6 py-3">
-                    <span className="font-script text-2xl text-portal-gold sm:text-3xl">
-                      Compromiso de San Valentin Firmado
-                    </span>
-                    <motion.svg
-                      width="120"
-                      height="40"
-                      viewBox="0 0 120 40"
-                      fill="none"
-                    >
-                      <motion.path
-                        d="M5 25 C 15 5, 35 5, 45 25 S 75 45, 85 20 110 20"
-                        stroke="rgba(212,175,55,0.9)"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 1.8, ease: "easeInOut" }}
-                      />
-                    </motion.svg>
-                  </div>
-                </motion.div>
               </GlassCard>
             </motion.div>
           )}
