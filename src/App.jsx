@@ -6,8 +6,11 @@ import GlassCard from "./components/ui/GlassCard"
 const TARGET_DATE = new Date(2026, 1, 14, 0, 0, 0, 0)
 const RELATIONSHIP_START = new Date(2023, 1, 14, 0, 0, 0, 0)
 const ACCEPTED_KEY = "portal14Accepted"
-const LETTER_TEXT =
-  "Te invito a cruzar este portal. Una noche cuidada al detalle, una mesa reservada, y una promesa: desconectar el mundo para mirarnos de verdad.\n\nSi aceptas, la ubicacion se desbloquea. Si no, el sistema igual insiste en esperarte."
+const LETTER_TEXT = `Hola mi niña hermosa
+
+Hoy es un día para celebrar el amor, pero la verdad es que contigo no necesito un calendario ni una fecha especial para sentirme el más suertudo del mundo. Escribo esto porque hay veces que por andar haciendo mis cosas y todo, se me olvida decirte lo mucho que admiro tu forma de ser, que me encanta tu risa, que me fascinan tus ojos, que me muero por tus besos, lo bien que me caes y la paz que me das con solo estar cerca.
+
+Gracias por ser mi lugar seguro, mi mejor amiga, mi niña, mi princesa y por hacer que hasta los días más grises tengan un poquito de sol. No quiero solo un San Valentín contigo mi amor, quiero todos los momentos que la vida nos regale. Te amo más de lo que las palabras pueden explicar.`
 
 const TARGET_DATE_TEXT = "14/02/2026"
 const TARGET_DATE_DISPLAY = "14 de Febrero"
@@ -783,9 +786,26 @@ function App() {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="mt-4 overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-5"
+                        className="relative mt-4 overflow-hidden rounded-2xl border border-portal-gold/30 bg-[linear-gradient(140deg,rgba(212,175,55,0.14),rgba(255,99,132,0.1),rgba(255,255,255,0.06))] p-5"
                       >
-                        <p className="min-h-[120px] whitespace-pre-line text-sm leading-relaxed text-white/90">
+                        <div className="pointer-events-none absolute -right-3 -top-2 text-rose-200/35">
+                          <Heart className="h-9 w-9" />
+                        </div>
+                        <div className="pointer-events-none absolute -bottom-3 -left-2 text-portal-gold/30">
+                          <Heart className="h-8 w-8" />
+                        </div>
+                        <div className="relative">
+                          <div className="mb-4 flex items-center justify-between gap-3">
+                            <span className="font-script text-3xl leading-none text-rose-100 sm:text-4xl">
+                              Para mi niña hermosa
+                            </span>
+                            <span className="rounded-full border border-portal-gold/35 bg-portal-gold/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-portal-gold/90">
+                              San Valentin
+                            </span>
+                          </div>
+                          <div className="mb-4 h-px w-full bg-gradient-to-r from-transparent via-portal-gold/70 to-transparent" />
+                        </div>
+                        <p className="relative min-h-[120px] whitespace-pre-line text-[15px] leading-7 text-white/95 sm:text-base sm:leading-8">
                           {typedText}
                           {typedLength < LETTER_TEXT.length && (
                             <span className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-portal-gold/80 align-middle" />
