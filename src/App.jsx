@@ -4,7 +4,7 @@ import { Heart, Lock, Mail, ShieldCheck } from "lucide-react"
 import GlassCard from "./components/ui/GlassCard"
 
 const TARGET_DATE = new Date(2026, 1, 14, 0, 0, 0, 0)
-const RELATIONSHIP_START = new Date(2023, 1, 14, 0, 0, 0, 0)
+const RELATIONSHIP_START = new Date(2025, 3, 21, 0, 0, 0, 0)
 const ACCEPTED_KEY = "portal14Accepted"
 const LETTER_TEXT = `Hola mi niña hermosa
 
@@ -15,8 +15,8 @@ Gracias por ser mi lugar seguro, mi mejor amiga, mi niña, mi princesa y por hac
 const TARGET_DATE_TEXT = "14/02/2026"
 const TARGET_DATE_DISPLAY = "14 de Febrero"
 const LOCKED_TIME = { hours: 19, minutes: 0, seconds: 0, milliseconds: 0 }
-const FORCE_UNLOCK_LETTER = true
-const FORCE_PREVIEW_MODE = true
+const FORCE_UNLOCK_LETTER = false
+const FORCE_PREVIEW_MODE = false
 
 const getCountdown = () => {
   const now = Date.now()
