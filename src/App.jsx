@@ -16,6 +16,7 @@ const TARGET_DATE_TEXT = "14/02/2026"
 const TARGET_DATE_DISPLAY = "14 de Febrero"
 const LOCKED_TIME = { hours: 19, minutes: 0, seconds: 0, milliseconds: 0 }
 const FORCE_UNLOCK_LETTER = true
+const FORCE_PREVIEW_MODE = true
 
 const getCountdown = () => {
   const now = Date.now()
@@ -164,6 +165,7 @@ const LocationDecryptor = ({
 }
 
 const getInitialPhase = () => {
+  if (FORCE_PREVIEW_MODE) return "accepted"
   if (typeof window === "undefined") return "loading"
   try {
     return window.localStorage.getItem(ACCEPTED_KEY) === "true"
@@ -373,8 +375,18 @@ function App() {
   }, [phase])
 
   useEffect(() => {
+    if (phase !== "accepted") return
+    if (!FORCE_PREVIEW_MODE) return
+    setLetterOpen(true)
+  }, [phase])
+
+  useEffect(() => {
     if (!letterOpen) {
       setTypedLength(0)
+      return
+    }
+    if (FORCE_PREVIEW_MODE) {
+      setTypedLength(LETTER_TEXT.length)
       return
     }
     let current = 0
