@@ -15,6 +15,7 @@ Gracias por ser mi lugar seguro, mi mejor amiga, mi niña, mi princesa y por hac
 const TARGET_DATE_TEXT = "14/02/2026"
 const TARGET_DATE_DISPLAY = "14 de Febrero"
 const LOCKED_TIME = { hours: 19, minutes: 0, seconds: 0, milliseconds: 0 }
+const FORCE_UNLOCK_LETTER = true
 
 const getCountdown = () => {
   const now = Date.now()
@@ -433,7 +434,7 @@ function App() {
     [typedLength],
   )
 
-  const isUnlockDateReached = countdown.diff === 0
+  const isUnlockDateReached = FORCE_UNLOCK_LETTER || countdown.diff === 0
 
   const locationText = "COORDENADAS: 19.4326 N 99.1332 W"
   const locationTone = "text-red-400 animate-pulse"
